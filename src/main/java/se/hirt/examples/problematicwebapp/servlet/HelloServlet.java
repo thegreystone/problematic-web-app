@@ -40,6 +40,11 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+/**
+ * Servlet "Hello World". Will be available under /helloservlet.
+ * 
+ * @author Marcus Hirt
+ */
 @WebServlet(name = "HelloWorldServlet", urlPatterns = { "/helloservlet" })
 public class HelloServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;

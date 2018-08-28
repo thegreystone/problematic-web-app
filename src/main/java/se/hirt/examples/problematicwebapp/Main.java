@@ -44,6 +44,11 @@ import org.apache.catalina.webresources.StandardRoot;
 import org.glassfish.jersey.server.ResourceConfig;
 import org.glassfish.jersey.servlet.ServletContainer;
 
+/**
+ * Launches the embedded Tomcat.
+ * 
+ * @author Marcus Hirt
+ */
 public class Main {
 	@SuppressWarnings("deprecation")
 	public static void main(String[] args) throws ServletException, LifecycleException {
