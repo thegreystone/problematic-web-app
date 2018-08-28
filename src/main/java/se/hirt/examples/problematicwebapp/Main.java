@@ -41,29 +41,40 @@ import org.apache.catalina.core.StandardContext;
 import org.apache.catalina.startup.Tomcat;
 import org.apache.catalina.webresources.DirResourceSet;
 import org.apache.catalina.webresources.StandardRoot;
+import org.glassfish.jersey.server.ResourceConfig;
+import org.glassfish.jersey.servlet.ServletContainer;
 
 public class Main {
+	@SuppressWarnings("deprecation")
 	public static void main(String[] args) throws ServletException, LifecycleException {
-        String webappDirLocation = "src/main/webapp/";
-        Tomcat tomcat = new Tomcat();
+		String webappDirLocation = "src/main/webapp/";
+		Tomcat tomcat = new Tomcat();
 
-        String webPort = System.getenv("PORT");
-        if(webPort == null || webPort.isEmpty()) {
-            webPort = "8080";
-        }
+		String webPort = System.getenv("PORT");
+		if (webPort == null || webPort.isEmpty()) {
+			webPort = "8080";
+		}
 
-        tomcat.setPort(Integer.valueOf(webPort));
+		tomcat.setPort(Integer.valueOf(webPort));
 
-        StandardContext ctx = (StandardContext) tomcat.addWebapp("/", new File(webappDirLocation).getAbsolutePath());
-        System.out.println("Basedir: " + new File("./" + webappDirLocation).getAbsolutePath());
-        File additionWebInfClasses = new File("target/classes");
-        WebResourceRoot resources = new StandardRoot(ctx);
-        resources.addPreResources(new DirResourceSet(resources, "/WEB-INF/classes",
-                additionWebInfClasses.getAbsolutePath(), "/"));
-        ctx.setResources(resources);
+		StandardContext ctx = (StandardContext) tomcat.addWebapp("/", new File(webappDirLocation).getAbsolutePath());
+		System.out.println("Basedir: " + new File("./" + webappDirLocation).getAbsolutePath());
+		File additionWebInfClasses = new File("target/classes");
+		WebResourceRoot resources = new StandardRoot(ctx);
+		resources.addPreResources(
+				new DirResourceSet(resources, "/WEB-INF/classes", additionWebInfClasses.getAbsolutePath(), "/"));
+		ctx.setResources(resources);
 
-        tomcat.start();
-        tomcat.getServer().await();
-    }
+		// Add servlet that will register Jersey REST resources
+		Tomcat.addServlet(ctx, "jersey-container-servlet", resourceConfig());
+		ctx.addServletMapping("/rest/*", "jersey-container-servlet");
+
+		tomcat.start();
+		tomcat.getServer().await();
+	}
+
+	private static ServletContainer resourceConfig() {
+		return new ServletContainer(new ResourceConfig(new ResourceLoader().getClasses()));
+	}
 
 }
