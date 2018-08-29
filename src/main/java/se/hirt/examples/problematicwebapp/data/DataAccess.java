@@ -40,7 +40,7 @@ import com.hazelcast.core.HazelcastInstance;
 import com.hazelcast.flakeidgen.FlakeIdGenerator;
 
 /**
- * Entry point for data access.
+ * Memory grid data access.
  * 
  * @author Marcus Hirt
  */
