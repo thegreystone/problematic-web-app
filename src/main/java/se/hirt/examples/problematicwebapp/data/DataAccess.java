@@ -53,6 +53,7 @@ public class DataAccess {
 
 	static {
 		Config cfg = new Config();
+		cfg.setClassLoader(Customer.class.getClassLoader());
 		HazelcastInstance instance = Hazelcast.newHazelcastInstance(cfg);
 		CUSTOMER_ID_GENERATOR = instance.getFlakeIdGenerator("customerIdGenerator");
 		CUSTOMERS = instance.getMap("customers");
