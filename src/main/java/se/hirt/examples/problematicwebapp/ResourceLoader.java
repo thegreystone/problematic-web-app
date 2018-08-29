@@ -36,6 +36,8 @@ import java.util.Set;
 
 import javax.ws.rs.core.Application;
 
+import org.glassfish.jersey.jsonb.internal.JsonBindingProvider;
+
 import se.hirt.examples.problematicwebapp.rest.CustomerResource;
 import se.hirt.examples.problematicwebapp.rest.CustomersResource;
 import se.hirt.examples.problematicwebapp.rest.HelloRest;
@@ -53,6 +55,7 @@ public class ResourceLoader extends Application {
 		classes.add(HelloRest.class);
 		classes.add(CustomerResource.class);
 		classes.add(CustomersResource.class);
+		classes.add(JsonBindingProvider.class);
 		return classes;
 	}
 }
