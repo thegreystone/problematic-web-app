@@ -84,4 +84,8 @@ public class Customer implements Serializable {
 			return false;
 		return true;
 	}
+
+	public String toString() {
+		return String.format("Customer [id=%d, fullName=%s, phoneNumber=%s", customerId, fullName, phoneNumber);
+	}
 }

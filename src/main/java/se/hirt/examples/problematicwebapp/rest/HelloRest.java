@@ -46,6 +46,6 @@ public class HelloRest {
     @GET
     @Produces(MediaType.TEXT_PLAIN)
     public String sayHello() {
-        return "Hello Rest!";
+        return "Hello World Rest!";
     }
 }

@@ -61,8 +61,8 @@ public class CustomerResource {
 		// If we have no customer, this is an insert, otherwise an update
 		final boolean newRecord = (null == customer);
 
-		String fullName = jsonEntity.getString("fullName");
-		String phoneNumber = jsonEntity.getString("phoneNumber");
+		String fullName = jsonEntity.getString(CustomerKeys.FULL_NAME);
+		String phoneNumber = jsonEntity.getString(CustomerKeys.PHONE_NUMBER);
 
 		if (newRecord) {
 			DataAccess.createCustomer(fullName, phoneNumber);
