@@ -50,6 +50,8 @@ import org.glassfish.jersey.servlet.ServletContainer;
  * @author Marcus Hirt
  */
 public class Main {
+	private static final String DEFAULT_PORT = "8080";
+
 	@SuppressWarnings("deprecation")
 	public static void main(String[] args) throws ServletException, LifecycleException {
 		String webappDirLocation = "src/main/webapp/";
@@ -57,7 +59,7 @@ public class Main {
 
 		String webPort = System.getenv("PORT");
 		if (webPort == null || webPort.isEmpty()) {
-			webPort = "8080";
+			webPort = DEFAULT_PORT;
 		}
 
 		tomcat.setPort(Integer.valueOf(webPort));

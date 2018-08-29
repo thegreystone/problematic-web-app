@@ -20,4 +20,4 @@ On Mac OS X use:
 target/bin/webapp
 ```
 
-Port is by default 80. Set the environment variable PORT to change.
+Port is by default 8080. Set the environment variable PORT to change.
