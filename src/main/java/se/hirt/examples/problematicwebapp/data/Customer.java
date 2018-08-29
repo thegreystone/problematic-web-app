@@ -29,30 +29,59 @@
  *
  * Copyright (C) Marcus Hirt, 2018
  */
-package se.hirt.examples.problematicwebapp;
+package se.hirt.examples.problematicwebapp.data;
 
-import java.util.HashSet;
-import java.util.Set;
-
-import javax.ws.rs.core.Application;
-
-import se.hirt.examples.problematicwebapp.rest.CustomerResource;
-import se.hirt.examples.problematicwebapp.rest.CustomersResource;
-import se.hirt.examples.problematicwebapp.rest.HelloRest;
+import java.io.Serializable;
 
 /**
- * Programmatic adding of our specific REST resources.
+ * A simple customer record.
  * 
  * @author Marcus Hirt
  */
-public class ResourceLoader extends Application {
+public class Customer implements Serializable {
+	private static final long serialVersionUID = -7669748978172006987L;
+
+	private final long customerId;
+	private final String fullName;
+	private final String phoneNumber;
+
+	Customer(long customerId, String fullName, String phoneNumber) {
+		this.customerId = customerId;
+		this.fullName = fullName;
+		this.phoneNumber = phoneNumber;
+	}
+
+	public long getCustomerId() {
+		return customerId;
+	}
+
+	public String getFullName() {
+		return fullName;
+	}
+
+	public String getPhoneNumber() {
+		return phoneNumber;
+	}
 
 	@Override
-	public Set<Class<?>> getClasses() {
-		final Set<Class<?>> classes = new HashSet<Class<?>>();
-		classes.add(HelloRest.class);
-		classes.add(CustomerResource.class);
-		classes.add(CustomersResource.class);
-		return classes;
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + (int) (customerId ^ (customerId >>> 32));
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		Customer other = (Customer) obj;
+		if (customerId != other.customerId)
+			return false;
+		return true;
 	}
 }
