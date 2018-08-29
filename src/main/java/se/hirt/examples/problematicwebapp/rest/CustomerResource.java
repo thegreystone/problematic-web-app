@@ -25,7 +25,7 @@ public class CustomerResource {
 	public CustomerResource(UriInfo uriInfo, String customerId) {
 		this.uriInfo = uriInfo;
 		this.customerId = customerId;
-		this.customer = DataAccess.getCustomerById(Long.getLong(customerId));
+		this.customer = DataAccess.getCustomerById(Long.valueOf(customerId));
 	}
 
 	public UriInfo getUriInfo() {
