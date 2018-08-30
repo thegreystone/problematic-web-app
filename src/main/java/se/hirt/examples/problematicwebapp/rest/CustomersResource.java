@@ -53,6 +53,7 @@ import javax.ws.rs.core.UriInfo;
 
 import se.hirt.examples.problematicwebapp.data.Customer;
 import se.hirt.examples.problematicwebapp.data.DataAccess;
+import se.hirt.examples.problematicwebapp.data.ValidationException;
 
 /**
  * Rest API for customers.
@@ -79,12 +80,18 @@ public class CustomersResource {
 	@PUT
 	@Consumes(MediaType.APPLICATION_JSON)
 	public Response putUser(JsonObject jsonEntity) {
-		return Response.accepted(decodeCustomer(jsonEntity)).build();
+		try {
+			return Response.accepted(decodeCustomer(jsonEntity)).build();
+		} catch (ValidationException e) {
+			return Response.status(Response.Status.NOT_ACCEPTABLE.getStatusCode(), e.getMessage()).build();
+		}
 	}
 
-	private static Customer decodeCustomer(JsonObject jsonEntity) {
-		return DataAccess.createCustomer(jsonEntity.getString(CustomerKeys.FULL_NAME),
-				jsonEntity.getString(CustomerKeys.PHONE_NUMBER));
+	private static Customer decodeCustomer(JsonObject jsonEntity) throws ValidationException {
+		String fullName = jsonEntity.getString(CustomerKeys.FULL_NAME);
+		String phoneNumber = jsonEntity.getString(CustomerKeys.PHONE_NUMBER);
+		Customer.validate(fullName, phoneNumber);
+		return DataAccess.createCustomer(fullName, phoneNumber);
 	}
 
 	@PUT
@@ -92,8 +99,13 @@ public class CustomersResource {
 	@Consumes(MediaType.APPLICATION_JSON)
 	public Response putUsers(JsonObject jsonEntity) {
 		JsonArray jsonArray = jsonEntity.getJsonArray("customers");
-		List<Customer> customers = jsonArray.stream().map((jsonValue) -> decodeCustomer(jsonValue.asJsonObject()))
-				.collect(Collectors.toList());
+		List<Customer> customers = jsonArray.stream().map((jsonValue) -> {
+			try {
+				return decodeCustomer(jsonValue.asJsonObject());
+			} catch (ValidationException e) {
+				return null;
+			}
+		}).collect(Collectors.toList());
 		return Response.accepted(customers).build();
 	}
 

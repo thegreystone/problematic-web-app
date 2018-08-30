@@ -88,4 +88,26 @@ public class Customer implements Serializable {
 	public String toString() {
 		return String.format("Customer [id=%d, fullName=%s, phoneNumber=%s", customerId, fullName, phoneNumber);
 	}
+	
+	public static void validate(String fullName, String phoneNumber) throws ValidationException {
+		validateFullName(fullName);
+		validatePhoneNumber(phoneNumber);
+	}
+	
+	private static void validateFullName(String fullName) throws ValidationException {
+		if (fullName == null || fullName.isEmpty()) {
+			throw new ValidationException("Empty fullName!");
+		}
+		if (!fullName.contains(" ")) {
+			throw new ValidationException("Must have first and last name!");
+		}
+	}
+	
+	private static void validatePhoneNumber(String phoneNumber) throws ValidationException {
+		// Just checking that the allowed characters are there
+		String stripped = phoneNumber.replace(" ", "");
+		if (!stripped.matches("\\+?[\\d-]*(?:\\(\\d+\\))??[\\d-]*")) {
+			throw new ValidationException(phoneNumber + " is not a valid phone number!");
+		}
+	}
 }
