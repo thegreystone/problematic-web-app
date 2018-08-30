@@ -9,7 +9,7 @@
 <link rel="stylesheet" type="text/css" href="../style.css">
 </head>
 <body>
-	<h2>Simple UI!</h2>
+	<h2>Simple UI</h2>
 </body>
 <%
 	List<Customer> customers = new ArrayList<>(DataAccess.getAllCustomers());
@@ -28,7 +28,7 @@
 		<td class="customerTable"><%=c.getCustomerId()%></td>
 		<td class="customerTable"><%=c.getFullName()%></td>
 		<td class="customerTable"><%=c.getPhoneNumber()%></td>
-		<td class="customerTable"><%=c.getPhoneNumber()%></td>
+		<td class="customerTable"><a class="customerDeleteLink" href="/deletecustomer?id=<%=String.valueOf(c.getCustomerId())%>">Delete</a></td>
 	</tr>
 	<%
 		}

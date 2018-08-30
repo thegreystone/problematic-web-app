@@ -42,32 +42,34 @@ import javax.servlet.http.HttpServletResponse;
 
 import se.hirt.examples.problematicwebapp.data.Customer;
 import se.hirt.examples.problematicwebapp.data.DataAccess;
-import se.hirt.examples.problematicwebapp.data.ValidationException;
 import se.hirt.examples.problematicwebapp.rest.CustomerKeys;
 
 /**
- * Servlet "Hello World". Will be available under /helloservlet.
+ * Simple servlet API for deleting customers.
  * 
  * @author Marcus Hirt
  */
-@WebServlet(name = "AddCustomerServlet", urlPatterns = { "/addcustomer" })
-public class AddServlet extends HttpServlet {
+@WebServlet(name = "DeleteCustomerServlet", urlPatterns = {"/deletecustomer"})
+public class DeleteServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 
 	@Override
 	protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-		String fullName = req.getParameter(CustomerKeys.FULL_NAME);
-		String phoneNumber = req.getParameter(CustomerKeys.PHONE_NUMBER);
+		doGet(req, resp);
+	}
+
+	@Override
+	protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 		ServletOutputStream out = resp.getOutputStream();
+		Long parseLong = Long.valueOf(req.getParameter(CustomerKeys.ID));
+		Customer customer = DataAccess.getCustomerById(parseLong);
 		String result = "";
-		try {
-			Customer.validate(fullName, phoneNumber);
-			Customer customer = DataAccess.createCustomer(fullName, phoneNumber);
-			result = "Created: " + customer;
-		} catch (ValidationException e) {
-			result = e.getMessage();
+		if (customer != null) {
+			result = "Removed: " + DataAccess.removeCustomer(customer);
+		} else {
+			result = "Could not find user with id: " + parseLong;
 		}
-		out.write(result.getBytes());
+		out.write(result.getBytes());		
 		out.flush();
 		out.close();
 	}
