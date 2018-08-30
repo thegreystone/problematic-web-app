@@ -31,7 +31,6 @@
  */
 package se.hirt.examples.problematicwebapp.rest;
 
-import java.net.URI;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -39,6 +38,7 @@ import javax.json.Json;
 import javax.json.JsonArray;
 import javax.json.JsonArrayBuilder;
 import javax.json.JsonObject;
+import javax.json.JsonObjectBuilder;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.PUT;
@@ -48,7 +48,6 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import javax.ws.rs.core.UriBuilder;
 import javax.ws.rs.core.UriInfo;
 
 import se.hirt.examples.problematicwebapp.data.Customer;
@@ -68,13 +67,17 @@ public class CustomersResource {
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
 	public JsonArray list() {
-		JsonArrayBuilder uriArrayBuilder = Json.createArrayBuilder();
+		JsonArrayBuilder arrayBuilder = Json.createArrayBuilder();
 		for (Customer customer : DataAccess.getAllCustomers()) {
-			UriBuilder ub = uriInfo.getAbsolutePathBuilder();
-			URI userUri = ub.path(String.valueOf(customer.getCustomerId())).build();
-			uriArrayBuilder.add(userUri.toASCIIString());
+			// UriBuilder ub = uriInfo.getAbsolutePathBuilder();
+			// URI userUri = ub.path(String.valueOf(customer.getCustomerId())).build();
+			JsonObjectBuilder objectBuilder = Json.createObjectBuilder();
+			objectBuilder.add(CustomerKeys.ID, customer.getCustomerId());
+			objectBuilder.add(CustomerKeys.FULL_NAME, customer.getFullName());
+			objectBuilder.add(CustomerKeys.PHONE_NUMBER, customer.getPhoneNumber());
+			arrayBuilder.add(objectBuilder);
 		}
-		return uriArrayBuilder.build();
+		return arrayBuilder.build();
 	}
 
 	@PUT
