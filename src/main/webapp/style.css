@@ -1,0 +1,17 @@
+body {
+	font-family: sans-serif;
+}
+
+table.customerTable {
+    border: 1px solid black;
+}
+
+th.customerTable {
+	text-align: left;
+	padding: 10px;
+}
+
+td.customerTable {
+	padding-left: 10px;
+	padding-right: 10px;
+}
