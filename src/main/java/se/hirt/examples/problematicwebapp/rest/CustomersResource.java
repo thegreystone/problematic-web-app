@@ -72,7 +72,8 @@ public class CustomersResource {
 			// UriBuilder ub = uriInfo.getAbsolutePathBuilder();
 			// URI userUri = ub.path(String.valueOf(customer.getCustomerId())).build();
 			JsonObjectBuilder objectBuilder = Json.createObjectBuilder();
-			objectBuilder.add(CustomerKeys.ID, customer.getCustomerId());
+			// Can't trust the transfer of longs, unfortunately.
+			objectBuilder.add(CustomerKeys.ID, String.valueOf(customer.getCustomerId()));
 			objectBuilder.add(CustomerKeys.FULL_NAME, customer.getFullName());
 			objectBuilder.add(CustomerKeys.PHONE_NUMBER, customer.getPhoneNumber());
 			arrayBuilder.add(objectBuilder);

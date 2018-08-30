@@ -79,16 +79,17 @@ public class CustomerResource {
 			throw new NotFoundException("customerId " + customerId + " does not exist!");
 		}
 		JsonObjectBuilder builder = Json.createObjectBuilder();
-		builder.add("customerId", customer.getCustomerId());
-		builder.add("fullName", customer.getFullName());
-		builder.add("phoneNumber", customer.getPhoneNumber());
+		// Cannot use longs since, guess what, JavaScript will round them. ;)
+		builder.add(CustomerKeys.ID, String.valueOf(customer.getCustomerId()));
+		builder.add(CustomerKeys.FULL_NAME, customer.getFullName());
+		builder.add(CustomerKeys.PHONE_NUMBER, customer.getPhoneNumber());
 		return builder.build();
 	}
 
 	@PUT
 	@Consumes(MediaType.APPLICATION_JSON)
 	public Response putUser(JsonObject jsonEntity) {
-		String jsonCustomerId = jsonEntity.getString("customerId");
+		String jsonCustomerId = jsonEntity.getString(CustomerKeys.ID);
 
 		if ((jsonCustomerId != null) && !jsonCustomerId.equals(customerId)) {
 			return Response.status(409).entity("customerIds differ!\n").build();
