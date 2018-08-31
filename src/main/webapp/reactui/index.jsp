@@ -29,9 +29,8 @@
 			    	let li = document.createElement("li");
 			    	li.id = "LI" + customerId;
 			    	var span = createNode('span');	    	
-			    	const test = s.fullName + " (" + s.phoneNumber + ") <a class=\"deleteLink\" onclick=\"deleteUser(\'" + customerId + "'\);\">Delete</a>";
-					console.log("TEST: " + test);
-					span.innerHTML = test;
+			    	const entry = s.fullName + " (" + s.phoneNumber + ") <a class=\"deleteLink\" onclick=\"deleteUser(\'" + customerId + "'\);\">Delete</a>";
+					span.innerHTML = entry;
 					append(li, span);
 					append(ul, li);	
 				}
@@ -41,7 +40,6 @@
 	
 	function deleteListItem(elementId) {
 		const ul = document.getElementById('customers');
-		console.log(ul);
 		ul.removeChild(document.getElementById(elementId))
 	}
 	
