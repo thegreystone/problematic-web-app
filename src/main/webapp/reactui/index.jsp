@@ -4,9 +4,31 @@
 </head>
 <body onLoad="loadCustomers();">
 	<h2>Dynamic UI</h2>
-	
-	<ul id="customers">
-	</ul>
+	<div class="row">
+		<div class="column">
+			<form onsubmit="return addCustomer();" name="addForm">
+				<table>
+					<tr>
+						<td colspan="2"><b>Add New User</b></td>
+					</tr>
+					<tr>
+						<td>Full Name:</td>
+						<td><input type="text" name="fullName" id="fullName"></td>
+					</tr>
+					<tr>
+						<td>Phone Number:</td>
+						<td><input type="text" name="phoneNumber" id="phoneNumber"></td>
+					</tr>
+					<tr>
+						<td><input type="submit" value="Submit"></td>
+					</tr>
+				</table>
+			</form>
+		</div>
+		<div class="column">
+			<ul id="customers"></ul>
+		</div>
+	</div>
 	<script>
 	function createNode(element) {
 		return document.createElement(element);
@@ -43,13 +65,24 @@
 		ul.removeChild(document.getElementById(elementId))
 	}
 	
-	function deleteUser(id){
+	function deleteUser(id) {
 		const url = '/rest/customers/' + id;
 		fetch(url, {
 			  method: 'delete',
 			  headers: {'Content-Type': 'application/json'}
 			})
 			.then(deleteListItem("LI" + id));
+	}
+	
+	function addCustomer() {
+		const fullName = document.getElementById('fullName').value;
+		const phoneNumber = document.getElementById('phoneNumber').value;
+		const url = '/rest/customers/' + id;
+		fetch(url, {
+			  method: 'put',
+			  headers: {'Content-Type': 'application/json'},
+			  body: JSON.stringify({"fullName": fullName, "phoneNumber": phoneNumber})
+			})
 	}
   </script>
 </body>
