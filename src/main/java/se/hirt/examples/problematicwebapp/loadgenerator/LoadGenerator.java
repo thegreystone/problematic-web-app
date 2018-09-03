@@ -31,7 +31,10 @@
  */
 package se.hirt.examples.problematicwebapp.loadgenerator;
 
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.Properties;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -45,21 +48,35 @@ import java.util.concurrent.TimeUnit;
 public class LoadGenerator {
 	private static ScheduledExecutorService threadPool;
 
-	public static void main(String[] args) throws IOException, InterruptedException {
-		String propertyFile;
-		if (args.length == 1) {
-			propertyFile = args[0];
-		} else {
-			propertyFile = "load.properties";
-		}
+	public static void main(String[] args) throws InterruptedException, IOException {
 		Properties props = new Properties();
-		props.load(LoadGenerator.class.getResourceAsStream(propertyFile));
+
+		if (args.length == 1) {
+			File f = new File(args[0]);
+			try (InputStream stream = new FileInputStream(f)) {
+				props.load(stream);
+			} catch (IOException e) {
+				System.out
+						.println("First argument, if available, must be the path to an existing load.properties file.");
+				System.out.println("Error was: " + e.getMessage());
+				System.exit(2);
+			}
+		} else {
+			try (InputStream stream = LoadGenerator.class.getClassLoader().getResourceAsStream("load.properties")) {
+				props.load(stream);
+			} catch (IOException e) {
+				System.out.println("Using default load.properties file failed.");
+				System.out.println("Error was: " + e.getMessage());
+				System.exit(3);
+			}
+		}
+
 		int threadCount = Integer.parseInt(props.getProperty("threadCount"));
 		int workerCount = Integer.parseInt(props.getProperty("workerCount"));
-		int period =  Integer.parseInt(props.getProperty("period"));
-		
+		int period = Integer.parseInt(props.getProperty("period"));
+
 		threadPool = Executors.newScheduledThreadPool(threadCount, new LoadGeneratorThreadFactory());
-		
+
 		int delay = period <= 0 ? 0 : workerCount / period;
 		int currentDelay = 0;
 		for (int i = 0; i < workerCount; i++) {

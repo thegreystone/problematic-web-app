@@ -27,7 +27,7 @@ public class Names {
 	}
 
 	private static String [] extractStrings(String resourceName) throws IOException {
-		InputStream stream = Names.class.getResourceAsStream(resourceName);
+		InputStream stream = Names.class.getClassLoader().getResourceAsStream(resourceName);
 		if (stream == null) {
 			System.out.println("Could not find resoure " + resourceName + "! Exiting...");
 			System.exit(0);			
