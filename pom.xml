@@ -110,7 +110,11 @@
 							<mainClass>se.hirt.examples.problematicwebapp.Main</mainClass>
 							<id>webapp</id>
 						</program>
-					</programs>
+						<program>
+							<mainClass>se.hirt.examples.problematicwebapp.loadgenerator.LoadGenerator</mainClass>
+							<id>loadgenerator</id>
+						</program>
+				</programs>
 				</configuration>
 				<executions>
 					<execution>
