@@ -42,6 +42,7 @@ import javax.ws.rs.PUT;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.UriInfo;
 
 import se.hirt.examples.problematicwebapp.data.Customer;
@@ -55,13 +56,13 @@ import se.hirt.examples.problematicwebapp.data.DataAccess;
 public class CustomerResource {
 
 	private final UriInfo uriInfo;
-	private final String customerId;
+	private final String id;
 	private final Customer customer;
 
-	public CustomerResource(UriInfo uriInfo, String customerId) {
+	public CustomerResource(UriInfo uriInfo, String id) {
 		this.uriInfo = uriInfo;
-		this.customerId = customerId;
-		this.customer = DataAccess.getCustomerById(Long.valueOf(customerId));
+		this.id = id;
+		this.customer = DataAccess.getCustomerById(Long.valueOf(id));
 	}
 
 	public UriInfo getUriInfo() {
@@ -69,18 +70,18 @@ public class CustomerResource {
 	}
 
 	public String getCustomerId() {
-		return customerId;
+		return id;
 	}
 
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
 	public JsonObject getCustomer() {
 		if (null == customer) {
-			throw new NotFoundException("customerId " + customerId + " does not exist!");
+			throw new NotFoundException("customerId " + id + " does not exist!");
 		}
 		JsonObjectBuilder builder = Json.createObjectBuilder();
 		// Cannot use longs since, guess what, JavaScript will round them. ;)
-		builder.add(CustomerKeys.ID, String.valueOf(customer.getCustomerId()));
+		builder.add(CustomerKeys.ID, String.valueOf(customer.getId()));
 		builder.add(CustomerKeys.FULL_NAME, customer.getFullName());
 		builder.add(CustomerKeys.PHONE_NUMBER, customer.getPhoneNumber());
 		return builder.build();
@@ -89,9 +90,9 @@ public class CustomerResource {
 	@PUT
 	@Consumes(MediaType.APPLICATION_JSON)
 	public Response putUser(JsonObject jsonEntity) {
-		String jsonCustomerId = jsonEntity.getString(CustomerKeys.ID);
+		String jsonId = jsonEntity.getString(CustomerKeys.ID);
 
-		if ((jsonCustomerId != null) && !jsonCustomerId.equals(customerId)) {
+		if ((jsonId != null) && !jsonId.equals(id)) {
 			return Response.status(409).entity("customerIds differ!\n").build();
 		}
 
@@ -107,17 +108,19 @@ public class CustomerResource {
 			DataAccess.createCustomer(fullName, phoneNumber);
 			return Response.created(uriInfo.getAbsolutePath()).build();
 		} else {
-			DataAccess.updateCustomer(Long.valueOf(jsonCustomerId), fullName, phoneNumber);
+			DataAccess.updateCustomer(Long.valueOf(jsonId), fullName, phoneNumber);
 			return Response.noContent().build();
 		}
 	}
 
 	@DELETE
-	public void deleteUser() {
+	@Produces(MediaType.APPLICATION_JSON)
+	public Response deleteUser() {
 		if (customer == null) {
-			throw new NotFoundException("customerId " + customerId + "does not exist!");
+			throw new NotFoundException("customerId " + id + "does not exist!");
 		}
 		DataAccess.removeCustomer(customer);
+		return Response.status(Status.OK).entity(customer).build();
 	}
 
 }

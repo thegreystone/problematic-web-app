@@ -32,11 +32,11 @@
 package se.hirt.examples.problematicwebapp.data;
 
 import java.util.Collection;
-import java.util.Map;
 
 import com.hazelcast.config.Config;
 import com.hazelcast.core.Hazelcast;
 import com.hazelcast.core.HazelcastInstance;
+import com.hazelcast.core.IMap;
 import com.hazelcast.flakeidgen.FlakeIdGenerator;
 
 /**
@@ -45,9 +45,9 @@ import com.hazelcast.flakeidgen.FlakeIdGenerator;
  * @author Marcus Hirt
  */
 public class DataAccess {
-	private final static Map<Long, Customer> CUSTOMERS;
-	private final static Map<String, Customer> CUSTOMERS_INDEX_BY_NAME;
-	private final static Map<String, Customer> CUSTOMERS_INDEX_BY_PHONE;
+	private final static IMap<Long, Customer> CUSTOMERS;
+	private final static IMap<String, Customer> CUSTOMERS_INDEX_BY_NAME;
+	private final static IMap<String, Customer> CUSTOMERS_INDEX_BY_PHONE;
 
 	private final static FlakeIdGenerator CUSTOMER_ID_GENERATOR;
 
@@ -63,7 +63,7 @@ public class DataAccess {
 
 	public static Customer createCustomer(String fullName, String phoneNumber) {
 		Customer newCustomer = new Customer(CUSTOMER_ID_GENERATOR.newId(), fullName, phoneNumber);
-		CUSTOMERS.put(newCustomer.getCustomerId(), newCustomer);
+		CUSTOMERS.put(newCustomer.getId(), newCustomer);
 		CUSTOMERS_INDEX_BY_NAME.put(newCustomer.getFullName(), newCustomer);
 		CUSTOMERS_INDEX_BY_PHONE.put(newCustomer.getPhoneNumber(), newCustomer);
 		return newCustomer;
@@ -81,22 +81,21 @@ public class DataAccess {
 		return CUSTOMERS_INDEX_BY_PHONE.get(phone);
 	}
 
-	public static Customer removeCustomer(Customer customer) {
-		Customer removed = CUSTOMERS.remove(customer.getCustomerId());
-		CUSTOMERS_INDEX_BY_NAME.remove(customer.getFullName());
-		return removed;
+	public static void removeCustomer(Customer customer) {
+		CUSTOMERS.delete(customer.getId());
+		CUSTOMERS_INDEX_BY_NAME.delete(customer.getId());
 	}
 
 	public static int getNumberOfCustomers() {
 		return CUSTOMERS.size();
 	}
 
-	public static Customer getCustomerById(Long customerId) {
-		return CUSTOMERS.get(customerId);
+	public static Customer getCustomerById(Long id) {
+		return CUSTOMERS.get(id);
 	}
 
-	public static void updateCustomer(Long customerId, String fullName, String phoneNumber) {
-		Customer updated = new Customer(customerId, fullName, phoneNumber);
-		CUSTOMERS.replace(customerId, updated);
+	public static void updateCustomer(Long id, String fullName, String phoneNumber) {
+		Customer updated = new Customer(id, fullName, phoneNumber);
+		CUSTOMERS.replace(id, updated);
 	}
 }

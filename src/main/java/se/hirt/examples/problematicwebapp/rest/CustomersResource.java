@@ -73,7 +73,7 @@ public class CustomersResource {
 			// URI userUri = ub.path(String.valueOf(customer.getCustomerId())).build();
 			JsonObjectBuilder objectBuilder = Json.createObjectBuilder();
 			// Can't trust the transfer of longs, unfortunately.
-			objectBuilder.add(CustomerKeys.ID, String.valueOf(customer.getCustomerId()));
+			objectBuilder.add(CustomerKeys.ID, String.valueOf(customer.getId()));
 			objectBuilder.add(CustomerKeys.FULL_NAME, customer.getFullName());
 			objectBuilder.add(CustomerKeys.PHONE_NUMBER, customer.getPhoneNumber());
 			arrayBuilder.add(objectBuilder);
@@ -85,13 +85,13 @@ public class CustomersResource {
 	@Consumes(MediaType.APPLICATION_JSON)
 	public Response putUser(JsonObject jsonEntity) {
 		try {
-			return Response.accepted(decodeCustomer(jsonEntity)).build();
+			return Response.accepted(createCustomer(jsonEntity)).build();
 		} catch (ValidationException e) {
 			return Response.status(Response.Status.NOT_ACCEPTABLE.getStatusCode(), e.getMessage()).build();
 		}
 	}
 
-	private static Customer decodeCustomer(JsonObject jsonEntity) throws ValidationException {
+	private static Customer createCustomer(JsonObject jsonEntity) throws ValidationException {
 		String fullName = jsonEntity.getString(CustomerKeys.FULL_NAME);
 		String phoneNumber = jsonEntity.getString(CustomerKeys.PHONE_NUMBER);
 		Customer.validate(fullName, phoneNumber);
@@ -105,7 +105,7 @@ public class CustomersResource {
 		JsonArray jsonArray = jsonEntity.getJsonArray("customers");
 		List<Customer> customers = jsonArray.stream().map((jsonValue) -> {
 			try {
-				return decodeCustomer(jsonValue.asJsonObject());
+				return createCustomer(jsonValue.asJsonObject());
 			} catch (ValidationException e) {
 				return null;
 			}

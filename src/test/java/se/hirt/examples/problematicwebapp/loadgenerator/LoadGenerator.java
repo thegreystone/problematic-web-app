@@ -29,49 +29,50 @@
  *
  * Copyright (C) Marcus Hirt, 2018
  */
-package se.hirt.examples.problematicwebapp.servlet;
+package se.hirt.examples.problematicwebapp.loadgenerator;
 
 import java.io.IOException;
-
-import javax.servlet.ServletException;
-import javax.servlet.ServletOutputStream;
-import javax.servlet.annotation.WebServlet;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
-import se.hirt.examples.problematicwebapp.data.Customer;
-import se.hirt.examples.problematicwebapp.data.DataAccess;
-import se.hirt.examples.problematicwebapp.rest.CustomerKeys;
+import java.util.Properties;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 /**
- * Simple servlet API for deleting customers.
+ * Simple little load generator to this example application.
  * 
  * @author Marcus Hirt
  */
-@WebServlet(name = "DeleteCustomerServlet", urlPatterns = {"/deletecustomer"})
-public class DeleteServlet extends HttpServlet {
-	private static final long serialVersionUID = 1L;
+public class LoadGenerator {
+	private static ScheduledExecutorService threadPool;
 
-	@Override
-	protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-		doGet(req, resp);
-	}
-
-	@Override
-	protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-		ServletOutputStream out = resp.getOutputStream();
-		Long parseLong = Long.valueOf(req.getParameter(CustomerKeys.ID));
-		Customer customer = DataAccess.getCustomerById(parseLong);
-		String result = "";
-		if (customer != null) {
-			DataAccess.removeCustomer(customer);
-			result = "Removed: " + customer;
+	public static void main(String[] args) throws IOException, InterruptedException {
+		String propertyFile;
+		if (args.length == 1) {
+			propertyFile = args[0];
 		} else {
-			result = "Could not find user with id: " + parseLong;
+			propertyFile = "load.properties";
 		}
-		out.write(result.getBytes());		
-		out.flush();
-		out.close();
+		Properties props = new Properties();
+		props.load(LoadGenerator.class.getResourceAsStream(propertyFile));
+		int threadCount = Integer.parseInt(props.getProperty("threadCount"));
+		int workerCount = Integer.parseInt(props.getProperty("workerCount"));
+		int period =  Integer.parseInt(props.getProperty("period"));
+		
+		threadPool = Executors.newScheduledThreadPool(threadCount, new LoadGeneratorThreadFactory());
+		
+		int delay = period <= 0 ? 0 : workerCount / period;
+		int currentDelay = 0;
+		for (int i = 0; i < workerCount; i++) {
+			threadPool.scheduleAtFixedRate(new LoadWorker(props), currentDelay, period, TimeUnit.MILLISECONDS);
+			currentDelay += delay;
+		}
+		System.out.println("Started load generator with " + threadCount + " threads.");
+		System.out.println("Press <enter> to quit!");
+		System.in.read();
+		System.out.print("Shutting down...");
+		threadPool.shutdown();
+		threadPool.awaitTermination(10, TimeUnit.SECONDS);
+		System.out.println(" done!");
 	}
+
 }

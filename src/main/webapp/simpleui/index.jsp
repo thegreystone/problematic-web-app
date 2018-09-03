@@ -25,10 +25,10 @@
 		for (Customer c : customers) {
 	%>
 	<tr>
-		<td class="customerTable"><%=c.getCustomerId()%></td>
+		<td class="customerTable"><%=c.getId()%></td>
 		<td class="customerTable"><%=c.getFullName()%></td>
 		<td class="customerTable"><%=c.getPhoneNumber()%></td>
-		<td class="customerTable"><a class="customerDeleteLink" href="/deletecustomer?id=<%=String.valueOf(c.getCustomerId())%>">Delete</a></td>
+		<td class="customerTable"><a class="customerDeleteLink" href="/deletecustomer?id=<%=String.valueOf(c.getId())%>">Delete</a></td>
 	</tr>
 	<%
 		}

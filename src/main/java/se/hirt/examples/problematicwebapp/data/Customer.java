@@ -32,6 +32,14 @@
 package se.hirt.examples.problematicwebapp.data;
 
 import java.io.Serializable;
+import java.io.StringReader;
+
+import javax.json.Json;
+import javax.json.JsonNumber;
+import javax.json.JsonObject;
+import javax.json.JsonObjectBuilder;
+
+import se.hirt.examples.problematicwebapp.rest.CustomerKeys;
 
 /**
  * A simple customer record.
@@ -41,18 +49,18 @@ import java.io.Serializable;
 public class Customer implements Serializable {
 	private static final long serialVersionUID = -7669748978172006987L;
 
-	private final long customerId;
+	private final long id;
 	private final String fullName;
 	private final String phoneNumber;
 
-	Customer(long customerId, String fullName, String phoneNumber) {
-		this.customerId = customerId;
+	Customer(long id, String fullName, String phoneNumber) {
+		this.id = id;
 		this.fullName = fullName;
 		this.phoneNumber = phoneNumber;
 	}
 
-	public long getCustomerId() {
-		return customerId;
+	public long getId() {
+		return id;
 	}
 
 	public String getFullName() {
@@ -67,7 +75,7 @@ public class Customer implements Serializable {
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
-		result = prime * result + (int) (customerId ^ (customerId >>> 32));
+		result = prime * result + (int) (id ^ (id >>> 32));
 		return result;
 	}
 
@@ -80,20 +88,20 @@ public class Customer implements Serializable {
 		if (getClass() != obj.getClass())
 			return false;
 		Customer other = (Customer) obj;
-		if (customerId != other.customerId)
+		if (id != other.id)
 			return false;
 		return true;
 	}
 
 	public String toString() {
-		return String.format("Customer [id=%d, fullName=%s, phoneNumber=%s", customerId, fullName, phoneNumber);
+		return String.format("Customer [id=%d, fullName=%s, phoneNumber=%s", id, fullName, phoneNumber);
 	}
-	
+
 	public static void validate(String fullName, String phoneNumber) throws ValidationException {
 		validateFullName(fullName);
 		validatePhoneNumber(phoneNumber);
 	}
-	
+
 	private static void validateFullName(String fullName) throws ValidationException {
 		if (fullName == null || fullName.isEmpty()) {
 			throw new ValidationException("Empty fullName!");
@@ -102,12 +110,35 @@ public class Customer implements Serializable {
 			throw new ValidationException("Must have first and last name!");
 		}
 	}
-	
+
 	private static void validatePhoneNumber(String phoneNumber) throws ValidationException {
 		// Just checking that the allowed characters are there
 		String stripped = phoneNumber.replace(" ", "");
 		if (!stripped.matches("\\+?[\\d-]*(?:\\(\\d+\\))??[\\d-]*")) {
 			throw new ValidationException(phoneNumber + " is not a valid phone number!");
 		}
+	}
+
+	public static Customer fromJSon(String jsonString) {
+		JsonObject json = Json.createReader(new StringReader(jsonString)).readObject();
+		JsonNumber jsonNumberId = json.getJsonNumber(CustomerKeys.ID);
+
+		if ((jsonNumberId == null)) {
+			throw new IllegalArgumentException("Must have ID to create customer object from JSon");
+		}
+
+		long id = jsonNumberId.longValueExact();
+		String fullName = json.getString(CustomerKeys.FULL_NAME);
+		String phoneNumber = json.getString(CustomerKeys.PHONE_NUMBER);
+		return new Customer(Long.valueOf(id), fullName, phoneNumber);
+	}
+
+	public static String toJSon(Customer customer) {
+		JsonObjectBuilder builder = Json.createObjectBuilder();
+		// Cannot use longs since, guess what, JavaScript will round them. ;)
+		builder.add(CustomerKeys.ID, String.valueOf(customer.getId()));
+		builder.add(CustomerKeys.FULL_NAME, customer.getFullName());
+		builder.add(CustomerKeys.PHONE_NUMBER, customer.getPhoneNumber());
+		return builder.build().toString();
 	}
 }
