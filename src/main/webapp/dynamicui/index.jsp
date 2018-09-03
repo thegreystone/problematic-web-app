@@ -109,8 +109,13 @@
 				})
 			});
 		print("PUT for " + data.fullName);
+		clearInput();
 	}
 	
+	function clearInput() {
+		document.getElementById('fullName').value ="";
+		document.getElementById('phoneNumber').value ="";		
+	}
 
 	function print(s) {
         var  p = document.getElementById('printMessageContainer')
