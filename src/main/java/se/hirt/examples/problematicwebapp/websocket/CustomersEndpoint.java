@@ -29,35 +29,48 @@
  *
  * Copyright (C) Marcus Hirt, 2018
  */
-package se.hirt.examples.problematicwebapp;
+package se.hirt.examples.problematicwebapp.websocket;
 
-import java.util.HashSet;
-import java.util.Set;
+import javax.websocket.OnClose;
+import javax.websocket.OnError;
+import javax.websocket.OnMessage;
+import javax.websocket.OnOpen;
+import javax.websocket.Session;
+import javax.websocket.server.ServerEndpoint;
 
-import javax.ws.rs.core.Application;
-
-import org.glassfish.jersey.jsonb.internal.JsonBindingProvider;
-
-import se.hirt.examples.problematicwebapp.rest.CustomerResource;
-import se.hirt.examples.problematicwebapp.rest.CustomersResource;
-import se.hirt.examples.problematicwebapp.rest.HelloRest;
-import se.hirt.examples.problematicwebapp.websocket.CustomersEndpoint;
+import se.hirt.examples.problematicwebapp.utils.Utils;
 
 /**
- * Programmatic adding of our specific REST resources.
  * 
  * @author Marcus Hirt
  */
-public class ResourceLoader extends Application {
+@ServerEndpoint("/customersocket")
+public class CustomersEndpoint {
 
-	@Override
-	public Set<Class<?>> getClasses() {
-		final Set<Class<?>> classes = new HashSet<Class<?>>();
-		classes.add(HelloRest.class);
-		classes.add(CustomerResource.class);
-		classes.add(CustomersResource.class);
-		classes.add(JsonBindingProvider.class);
-		classes.add(CustomersEndpoint.class);
-		return classes;
+	@OnMessage
+	public void onMessage(Session session, String message) {
+		System.out.println("Got sent " + message + " from " + session);
+		try {
+			session.getBasicRemote().sendText(Utils.messageActionAsJSonString("Hello from Websocket Endpoint!"));
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+
+	@OnOpen
+	public void onOpen(Session session) {
+		System.out.println("onOpen: " + session.getId());
+		CustomersService.getInstance().addSession(session);
+	}
+
+	@OnClose
+	public void onClose(Session session) {
+		System.out.println("onClose: " + session.getId());
+		CustomersService.getInstance().removeSession(session);
+	}
+
+	@OnError
+    public void onError(Throwable t) {
+        System.out.println("onError: " + t.getMessage());
 	}
 }

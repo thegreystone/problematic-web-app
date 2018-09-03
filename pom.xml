@@ -64,6 +64,11 @@
 			<artifactId>tomcat-embed-jasper</artifactId>
 			<version>${tomcat.version}</version>
 		</dependency>
+        <dependency>
+            <groupId>org.apache.tomcat.embed</groupId>
+            <artifactId>tomcat-embed-websocket</artifactId>
+            <version>${tomcat.version}</version>
+        </dependency>
 		<dependency>
 			<groupId>org.apache.tomcat</groupId>
 			<artifactId>tomcat-jasper-el</artifactId>

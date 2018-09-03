@@ -38,6 +38,7 @@ import com.hazelcast.core.Hazelcast;
 import com.hazelcast.core.HazelcastInstance;
 import com.hazelcast.core.IMap;
 import com.hazelcast.flakeidgen.FlakeIdGenerator;
+import com.hazelcast.map.listener.MapListener;
 
 /**
  * Memory grid data access.
@@ -98,4 +99,25 @@ public class DataAccess {
 		Customer updated = new Customer(id, fullName, phoneNumber);
 		CUSTOMERS.replace(id, updated);
 	}
+
+	/**
+	 * Adds a listener for getting notified on changes to the customers.
+	 * 
+	 * @param listener
+	 *            the listener to add.
+	 * @return the ID used to identify the listener on subsequent removal.
+	 */
+	public static String addCustomersListener(MapListener listener) {
+		return CUSTOMERS.addEntryListener(listener, true);
+	}
+
+	/**
+	 * Removes a previously registered listener. 
+	 * 
+	 * @param id the id of the listener to remove.
+	 */
+	public static void removeCustomersListener(String id) {
+		CUSTOMERS.removeEntryListener(id);
+	}
+
 }

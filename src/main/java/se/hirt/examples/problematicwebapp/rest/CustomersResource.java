@@ -84,8 +84,11 @@ public class CustomersResource {
 	@PUT
 	@Consumes(MediaType.APPLICATION_JSON)
 	public Response putUser(JsonObject jsonEntity) {
+		// Since JavaScript cannot handle full longs properly, we need to create the customer
+		// and take care of JSON serialization ourselves.
 		try {
-			return Response.accepted(createCustomer(jsonEntity)).build();
+			Customer customer = createCustomer(jsonEntity);
+			return Response.accepted(Customer.toJSon(customer).build().toString()).build();
 		} catch (ValidationException e) {
 			return Response.status(Response.Status.NOT_ACCEPTABLE.getStatusCode(), e.getMessage()).build();
 		}

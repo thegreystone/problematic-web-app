@@ -29,35 +29,41 @@
  *
  * Copyright (C) Marcus Hirt, 2018
  */
-package se.hirt.examples.problematicwebapp;
+package se.hirt.examples.problematicwebapp.websocket;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.util.HashMap;
+import java.util.Map;
 
-import javax.ws.rs.core.Application;
+import javax.websocket.Session;
 
-import org.glassfish.jersey.jsonb.internal.JsonBindingProvider;
-
-import se.hirt.examples.problematicwebapp.rest.CustomerResource;
-import se.hirt.examples.problematicwebapp.rest.CustomersResource;
-import se.hirt.examples.problematicwebapp.rest.HelloRest;
-import se.hirt.examples.problematicwebapp.websocket.CustomersEndpoint;
+import se.hirt.examples.problematicwebapp.data.DataAccess;
 
 /**
- * Programmatic adding of our specific REST resources.
+ * Service to listen for additions and removals of customers.
  * 
  * @author Marcus Hirt
  */
-public class ResourceLoader extends Application {
-
-	@Override
-	public Set<Class<?>> getClasses() {
-		final Set<Class<?>> classes = new HashSet<Class<?>>();
-		classes.add(HelloRest.class);
-		classes.add(CustomerResource.class);
-		classes.add(CustomersResource.class);
-		classes.add(JsonBindingProvider.class);
-		classes.add(CustomersEndpoint.class);
-		return classes;
+public class CustomersService {
+	private final static CustomersService INSTANCE = new CustomersService();
+	private final Map<Session, SessionMapListener> listeners = new HashMap<>();
+		
+	private CustomersService() {
 	}
+	
+	public static CustomersService getInstance() {
+		return INSTANCE;
+	}
+	
+	public void addSession(Session session) {
+		SessionMapListener mapListener = new SessionMapListener(session);
+		String id = DataAccess.addCustomersListener(mapListener);
+		mapListener.setId(id);
+		listeners.put(session, mapListener);
+	}
+	
+	public void removeSession(Session session) {
+		String id = listeners.get(session).getId();
+		listeners.remove(session);
+		DataAccess.removeCustomersListener(id);
+	}	
 }

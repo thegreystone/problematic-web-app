@@ -121,6 +121,10 @@ public class Customer implements Serializable {
 
 	public static Customer fromJSon(String jsonString) {
 		JsonObject json = Json.createReader(new StringReader(jsonString)).readObject();
+		return fromJSon(json);
+	}
+
+	public static Customer fromJSon(JsonObject json) {
 		JsonNumber jsonNumberId = json.getJsonNumber(CustomerKeys.ID);
 
 		if ((jsonNumberId == null)) {
@@ -133,12 +137,12 @@ public class Customer implements Serializable {
 		return new Customer(Long.valueOf(id), fullName, phoneNumber);
 	}
 
-	public static String toJSon(Customer customer) {
+	public static JsonObjectBuilder toJSon(Customer customer) {
 		JsonObjectBuilder builder = Json.createObjectBuilder();
 		// Cannot use longs since, guess what, JavaScript will round them. ;)
 		builder.add(CustomerKeys.ID, String.valueOf(customer.getId()));
 		builder.add(CustomerKeys.FULL_NAME, customer.getFullName());
 		builder.add(CustomerKeys.PHONE_NUMBER, customer.getPhoneNumber());
-		return builder.build().toString();
+		return builder;
 	}
 }

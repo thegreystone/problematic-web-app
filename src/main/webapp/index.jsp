@@ -8,7 +8,11 @@
 		<a href="simpleui/">Simple Servlet Customer UI</a>
 	</p>
 	<p>
-		<a href="reactui/">React Customer UI</a>
+		<a href="dynamicui/">Dynamic Customer UI</a>
 	</p>
+	<p>
+		<a href="websocketui/">Dynamic Customer UI + Websockets </a>
+	</p>
+
 </body>
 </html>
