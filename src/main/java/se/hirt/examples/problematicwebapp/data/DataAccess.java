@@ -84,7 +84,8 @@ public class DataAccess {
 
 	public static void removeCustomer(Customer customer) {
 		CUSTOMERS.delete(customer.getId());
-		CUSTOMERS_INDEX_BY_NAME.delete(customer.getId());
+		CUSTOMERS_INDEX_BY_NAME.delete(customer.getFullName());
+		CUSTOMERS_INDEX_BY_PHONE.delete(customer.getId()); // <--Hint!
 	}
 
 	public static int getNumberOfCustomers() {
