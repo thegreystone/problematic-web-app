@@ -42,7 +42,7 @@
 	<url>http://maven.apache.org</url>
 	<description>A webapplication with various commonly encountered problems that can be used to train your profiling and diagnostic chops </description>
 	<properties>
-		<tomcat.version>8.5.32</tomcat.version>
+		<tomcat.version>8.5.34</tomcat.version>
 		<jersey.version>2.27</jersey.version>
 		<hazelcast.version>3.10.4</hazelcast.version>
 		<jaxb.version>2.4.0-b180725.0644</jaxb.version>
